@@ -14,7 +14,7 @@ class IRC
     @connection_count = 0
     @rss_feed = rss_feed
   end
-  
+
   def connect
     loop do
       connection_thread = Thread.new {connection_loop}
@@ -30,7 +30,7 @@ class IRC
       end
     end
   end
-  
+
   def connection_loop(retries = 4, reconnect_wait = 90)
     begin
       @socket = TCPSocket::open(@connection["server_name"], (@connection["server_port"] or 6667))
@@ -68,11 +68,11 @@ class IRC
       puts $!
     end
   end
-  
+
   def disconnect
     send("QUIT")
   end
-  
+
   def history_iphone(last_read)
     {
       :server_name => @connection["server_name"],
@@ -81,7 +81,7 @@ class IRC
       :history => @history.history_iphone(last_read)
     }
   end
-  
+
   def history(last_read)
     {
       :server_name => @connection["server_name"],
@@ -93,23 +93,23 @@ class IRC
       :history => @history.history(last_read)
     }
   end
-  
+
   def sync_channels(channels)
     close_channels = Array.new
     channels.each {|channel| close_channels << channel unless @history.joined_channel?(channel)}
     close_channels
   end
-  
+
   def sync_privmsgs(privmsgs)
     close_privmsgs = Array.new
     privmsgs.each {|privmsg| close_privmsgs << privmsg unless @history.in_private_chat?(privmsg)}
     close_privmsgs
   end
-  
+
   def close(target)
     @history.close(target)
   end
-  
+
   def send(text)
     begin
       @socket.send "#{text}\n", 0
@@ -118,7 +118,7 @@ class IRC
     end
     text
   end
-  
+
   def join(channel, key)
     if key
       send("JOIN #{channel} #{key}")
@@ -127,7 +127,7 @@ class IRC
     end
     @joined_channels[channel.downcase] = key
   end
-  
+
   def part(channel, msg)
     if msg
       send("PART #{channel} :#{msg}")
@@ -136,7 +136,7 @@ class IRC
     end
     @joined_channels.delete(channel.downcase)
   end
-  
+
   def privmsg(target, text, ctcp_cmd)
     if ctcp_cmd
       case ctcp_cmd
@@ -155,16 +155,16 @@ class IRC
       send("PRIVMSG #{target} :#{text}")
     end
   end
-  
+
   def notice(target, text)
     @history.self_notice(target, text)
     send("NOTICE #{target} :#{text}")
   end
-  
+
   def new_window(target)
     @history.new_window(target)
   end
-  
+
   private
 
   def server_retry(tag, text, retries = 0, reconnect_wait = nil)
@@ -280,7 +280,7 @@ class IRC
       @history.server_error_reply_raw(source, server_error_code_tag(code), text)
     end
   end
-  
+
   def server_code_tag(code)
     case code
     when 1

@@ -12,7 +12,7 @@ class RSSFeed
     add_element(channel, "link", "http://github.com/andyherbert/WebIRC")
     add_element(channel, "description", "URIs caught by the WebIRC client")
   end
-  
+
   def add_element(node, name, text = nil, encode = false, attributes = {})
     element = node.add_element(name, attributes)
     element.text = (encode ? REXML::Text.new(REXML::Text.new(text)) : text) if text
@@ -31,7 +31,7 @@ class RSSFeed
     @items << item
     @items.delete_at(0) if @items.length > 32
   end
-  
+
   def to_s
     new_feed = @master.dup
     @items.reverse.each {|item| new_feed.root.elements["channel"] << item}

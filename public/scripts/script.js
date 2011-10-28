@@ -684,7 +684,7 @@ function add_oper(connection_id, channel, name) {
 
 function add_voicer(connection_id, channel, name) {
   add_user_element(connection_id, channel, name, "voice")
-  
+
 }
 
 function add_user(connection_id, channel, name) {

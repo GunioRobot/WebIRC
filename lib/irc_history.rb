@@ -34,7 +34,7 @@ class IRCHistory
     @root_log = {:history => Array.new, :last_activity => Time.now.to_i}
     @msg_id = 0
   end
-  
+
   def stoned?
     (Time.now.to_i - @root_log[:last_activity]) > 1200 # 20 Minutes
   end
@@ -177,19 +177,19 @@ class IRCHistory
       add_history(@channels, target, {:type => PRIVMSG, :source => source, :msg => msg})
     end
   end
-  
+
   def self_privmsg(target, msg)
     self_input(PRIVMSG, target, msg)
   end
-  
+
   def self_action(target, msg)
     self_input(ACTION, target, msg)
   end
-  
+
   def self_notice(target, msg)
     self_input(NOTICE, target, msg)
   end
-  
+
   def quit(user, msg)
     add_history(@privmsgs, user, {:type => QUIT, :user => user, :msg => msg}) if in_private_chat?(user)
     @channels.each_pair {|name, history| add_history(@channels, name, {:type => QUIT, :user => user, :msg => msg}) if channels(name)[:userlist].remove(user)}
@@ -200,19 +200,19 @@ class IRCHistory
     server_reply_topic_creation(channel, source, Time.now.to_i)
     add_history(@channels, channel, {:type => TOPIC, :source => source, :text => text})
   end
-  
+
   def history_iphone(last_read)
     { :channels => target_history(@channels, last_read),
       :privmsgs => target_history(@privmsgs, last_read) }
   end
-  
+
   def history(last_read)
     { :root_log => {:last_activity => @root_log[:last_activity], :data => since_last_read(@root_log, last_read)},
       :channels => target_history(@channels, last_read),
       :privmsgs => target_history(@privmsgs, last_read),
       :users => users }
   end
-  
+
   def users
     users_hash = Hash.new
     @channels.each_pair {|name, target| users_hash[name] = { :opers   => target[:userlist].opers,
@@ -220,17 +220,17 @@ class IRCHistory
                                                              :users   => target[:userlist].users } }
     users_hash
   end
-  
+
   def close(target)
     @privmsgs.delete(target)
   end
-  
+
   def new_window(target)
     privmsgs(target)
   end
-  
+
   private
-  
+
   def self_input(type, target, msg)
     if @channels.include?(target.downcase) or target =~ /^[&#!+.~]/
       add_history(@channels, target, {:type => type, :source => @nickname, :msg => msg})
@@ -250,13 +250,13 @@ class IRCHistory
     end
     history
   end
-  
+
   def since_last_read(element, last_read)
     history = Array.new
     element[:history].each {|element| history << element if element[:msg_id] > last_read}
     history
   end
-  
+
   def add_history(target, name, elements)
     name = name.downcase if name
     case target
@@ -338,7 +338,7 @@ class IRCHistory
       return @voicers.push(nickname) if @opers.include?(nickname)
       @voicers.push(nickname) if @users.delete(nickname)
     end
-    
+
     def voicers
       filtered_voice = Array.new
       @voicers.each {|user| filtered_voice << user unless @opers.include?(user)}

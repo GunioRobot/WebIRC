@@ -19,20 +19,20 @@ helpers do
   def config(key)
     @@config[key]
   end
-  
+
   def protected?
     @@config["web_user"] and @@config["web_password"]
   end
-  
+
   def protected!
     response["WWW-Authenticate"] = %(Basic realm="WebIRC") and throw(:halt, [401, "Not authorized\n"]) and return unless !protected? or authorized?
   end
-  
+
   def authorized?
     @auth ||=  Rack::Auth::Basic::Request.new(request.env)
     @auth.provided? and @auth.basic? and @auth.credentials and @auth.credentials == [@@config["web_user"], @@config["web_password"]]
   end
-  
+
   def get_history_iphone(last_read)
     history = Hash.new
     @@connections.each_connection_with_id do |connection_id, connection|
@@ -40,7 +40,7 @@ helpers do
     end
     history
   end
-  
+
   def get_history(last_read)
     history = Hash.new
     @@connections.each_connection_with_id do |connection_id, connection|
@@ -48,7 +48,7 @@ helpers do
     end
     history
   end
-  
+
   def get_users
     users = Hash.new
     @@connections.each_connection_with_id do |connection_id, connection|
@@ -56,7 +56,7 @@ helpers do
     end
     users
   end
-  
+
   def sync(open)
     close = Hash.new
     close_connections = Array.new
@@ -69,15 +69,15 @@ helpers do
     end
     {:targets => close, :connections => close_connections}
   end
-  
+
   def get_update_iphone(json_object)
     {:history => get_history_iphone(json_object["last_read"]), :sync => sync(json_object["sync"])}.to_json
   end
-  
+
   def get_update(json_object)
     {:history => get_history(json_object["last_read"]), :sync => sync(json_object["sync"])}.to_json
   end
-  
+
   def json_request(request)
     JSON.parse(request.env["rack.input"].read)
   end
